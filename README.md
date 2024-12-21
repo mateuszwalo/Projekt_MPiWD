@@ -1,4 +1,4 @@
-# 🌍 Analiza katastrof globalnych - zaliczenie przedmiotu Metody Pozyskiwania i wizualizacji danych
+# 🌍 Analiza katastrof globalnych - zaliczenie przedmiotu Metody Pozyskiwania i Wizualizacji danych
 
 Witaj w projekcie dotyczącym analizy katastrof na całym świecie. Celem tego projektu jest analiza danych związanych z globalnymi katastrofami, wykorzystanie różnych modeli maszynowego uczenia (w tym regresji logistycznej, lasu losowego i drzewa decyzyjnego) oraz ocena ich wydajności w przewidywaniu rodzaju katastrofy na podstawie dostępnych predyktorów.
 
