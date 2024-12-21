@@ -5,7 +5,7 @@ Witaj w projekcie dotyczącym analizy katastrof na całym świecie. Celem tego p
 ## 📂 Zawartość repozytorium
 
 - `Analiza_katastrof_globalnych.qmd` – Główny plik Quarto, w którym przeprowadzona jest analiza.
-- `Analiza_katastrof_globalnych.html` – Wygenerowany raport HTML z analizy -> polecam otwierać za pomocą githacka
+- `Analiza_katastrof_globalnych.html` – Wygenerowany raport HTML z analizy -> polecam otwierać za pomocą githacka, najpierw otwieramy raw html, potem w linku zmieniamy część git..... na githack
 - `train_balanced.csv` – Zbalansowane dane treningowe po zastosowaniu SMOTE.
 - `test_data.csv` – Dane testowe do oceny modelu.
 - `final_data.csv` – Ostateczny zestaw danych używanych w analizach.
