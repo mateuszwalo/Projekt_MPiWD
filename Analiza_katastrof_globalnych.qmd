@@ -27,7 +27,7 @@ execute:
 
 ## Problem badawczy
 
-Na świecie występuje wiele zagrożeń, z którymi bo które mają istotny wpływ na bezpieczeństwo ludzi. Można je podzielić na dwie główne kategorie:
+Na świecie występuje wiele zagrożeń, które mają istotny wpływ na bezpieczeństwo ludzi. Można je podzielić na dwie główne kategorie:
 
 1.  **Zagrożenia zależne od działalności człowieka** – na przykład katastrofy ekologiczne, takie jak wycieki ropy naftowej spowodowane rozbiciem tankowców.
 
@@ -35,7 +35,7 @@ Na świecie występuje wiele zagrożeń, z którymi bo które mają istotny wpł
 
 ### Cel analizy
 
-Niniejsza analiza ma na celu zbadanie danych pochodzących z platformy EMDAT, aby lepiej zrozumieć charakter i skalę zagrożeń, przed którymi stoją ludzie na całym świecie. W szczególności podjęte zostaną próby odpowiedzi na następujące pytania:
+Niniejsza analiza ma na celu zbadanie danych pochodzących z platformy EMDAT, aby lepiej zrozumieć charakter i skalę zagrożeń, z którymi mierzą się ludzie na całym świecie. W szczególności podjęte zostaną próby odpowiedzi na następujące pytania:
 
 -   **Które państwo lub region jest najbezpieczniejszy do życia pod względem występowania katastrof?**
 
@@ -67,13 +67,30 @@ Zbiór danych zawiera następujące informacje:
 
 -   **Skutki** – dane dotyczące strat materialnych i ludzkich.
 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(leaflet)
+library(dplyr)
+library(sf)
+library(tibble)
+library(knitr)
+library(rnaturalearth)
+library(networkD3)
+library(jsonlite)
+library(gganimate)
+
+# data <- read.csv("public_emdat_custom_request_2024-10-03_fdbbae24-da6c-4137-b8d4-3c5548a622df.csv")
+# head(data)
+```
+
 ### Sposób pozyskania danych
 
 Dane zostały pozyskane za pomocą funkcjonalnego API udostępnionego przez EMDAT. Proces wymagał zalogowania się na platformę oraz uzyskania odpowiedniej autoryzacji, co umożliwiło selekcję i pobranie potrzebnych informacji bezpośrednio z systemu EMDAT.
 
 ## Plan analizy
 
-W dalszych częściach raportu zostaną szczegółowo omówione kolumny zawarte w zbiorze danych, a także przeprowadzone zostaną analizy odpowiadające na wyżej wymienione pytania badawcze. Szczególna uwaga zostanie poświęcona:
+W dalszych częściach raportu zostaną szczegółowo omówione zmienne zawarte w zbiorze danych, a także przeprowadzone zostaną analizy odpowiadające na wyżej wymienione pytania badawcze. Szczególna uwaga zostanie poświęcona:
 
 -   Identyfikacji trendów w występowaniu katastrof.
 
@@ -85,7 +102,7 @@ Celem końcowym jest wypracowanie wniosków, które mogą wspierać strategie og
 
 ### Preprocessing i czyszczenie danych
 
-Z uwagi na fakt że surowe dane są niezbyt przyjazne do dalszej analizy wybierzemy z danych te kolumny które mają dla nas kluczową wartość i oczyścimy je do poziomu istotnych dla nas predyktorów.
+Z uwagi na fakt że surowe dane nie są przedstawione w przystępnej formie, w związku z tym do dalejszej analizy wybierzemy z danych te kolumny które mają dla nas kluczową wartość i oczyścimy je do poziomu istotnych dla nas pred
 
 ```{python}
 # import pandas as pd
@@ -133,22 +150,9 @@ Z uwagi na fakt że surowe dane są niezbyt przyjazne do dalszej analizy wybierz
 # simplified_data.to_csv(output_path, index=False)
 ```
 
-### Wczytanie oczyszczonego zbioru danych
-
 ```{r}
-library(tidyverse)
-library(ggplot2)
-library(leaflet)
-library(dplyr)
-library(sf)
-library(tibble)
-library(knitr)
-library(rnaturalearth)
-library(networkD3)
-library(jsonlite)
-library(gganimate)
-
 data <- read.csv("simplified_data.csv")
+head(data)
 ```
 
 ## Wizualizacje zbioru danych
@@ -218,13 +222,15 @@ fig.update_layout(
 )
 ```
 
-**Wnioski do wizualizacij:**
+**Wnioski do wizualizacji:**
 
--   Znakomitą większość aktualnych zagrożeń jest winą technologicznych! -\> Człowiek powoduje samoistnie katastrofy klimatyczne, wpływając tym też na zagrożenia naturalne, tworząc efekty ekologiczne negatywne dla planety, np. efekt cieplarniany, dziury ozonowe etc.
+-   Większość aktualnych zagrożeń wynika z obszaru technologicznegio-\> Człowiek powoduje samoistnie katastrofy klimatyczne, wpływając tym też na zagrożenia naturalne, tworząc efekty ekologiczne negatywne dla planety, np. efekt cieplarniany, dziury ozonowe etc.
 
--   Na podstawie tej wizualizacji firmy ubezpieczeniowe mogłyby dostosować swoją ofertę do ubezpieczeń majątkowych, ustalając konrektene kwoty np. w danym państwie jeśli częścią wustępują tam powodzie niż pożary etc.
+-   Na przetrzeni 25 lat, znacząco częśc katastrof były biologiczne u któych podstaw była technologia!
 
--   Świadomość społeczna naszych tego że ludzkie działania przyczyniają się do wyniczania planety może wiele zmienić, co możemy dokładnie zobaczyć na wyresie
+*Komentarz:*
+
+Na podstawie tej wizualizacji firmy ubezpieczeniowe mogłyby dostosować swoją ofertę do ubezpieczeń majątkowych, ustalając konrektene kwoty np. w danym państwie jeśli częścią wustępują tam powodzie niż pożary etc. Świadomość społeczna tego że ludzkie działania przyczyniają się do wyniczania planety może wiele zmienić, co możemy dokładnie zobaczyć na wyresie
 
 ```{r}
 data <- data %>%
@@ -241,7 +247,7 @@ ggplot(grouped_data, aes(x = Start.Date, y = Count, color = Disaster.Group, grou
   geom_smooth(method = "loess", se = FALSE, aes(group = 1), 
               color = "black", linetype = "dashed", size = 0.8) +
   labs(
-    title = 'Zmiana liczby typów katastrof w czasie',
+    title = 'Zmiana liczby katastrofw podziale na ich typ w czasie',
     subtitle = 'Liczba zdarzeń w dwóch grupach w zależności od daty',
     x = 'Data',
     y = 'Liczba zdarzeń',
@@ -269,11 +275,11 @@ ggplot(grouped_data, aes(x = Start.Date, y = Count, color = Disaster.Group, grou
 
 ```
 
-**Wnioski do wizualizacij:**
+**Wnioski do wizualizacji:**
 
--   Widzimy ogólnie rzecz biorąc spadek występowania katastrof od począteku tego wieku, lecz nasila się w obecnych czasach liczebność katastrof naturalnych, być może, jest to spowodowane tym że przez wiekszość czasu rozwijaliśmy przemysł technologiczny i zanieczyszczaliśmy planetę nie patrząc na skutki, i teraz gdy mamy wiele regularyzacji na temat funkcjonowania przedsiębiorstw, zostaje problem środowiska które zostało zanieczyszczone wcześniej.
+-   Widzimy ogólnie rzecz biorąc spadek występowania katastrof od począteku XXI wieku, lecz nasila się w obecnych czasach liczebność katastrof naturalnych. Być może, jest to spowodowane tym, że przez wiekszość czasu rozwijano przemysł technologiczny i zanieczyszczano planetę nie patrząc na skutki, i teraz gdy mamy wiele regularyzacji na temat funkcjonowania przedsiębiorstw, zostaje problem środowiska które zostało zanieczyszczone wcześniej.
 
-**Suma katastrof w każdym państwie**
+**Liczba katastrof w każdym państwie**
 
 ```{r}
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -306,9 +312,11 @@ leaflet(world_data) %>%
 
 **Wnioski do wizualizacji:**
 
--   Sumarycznie w Chinach dochodzi do największej liczby katastrof na przestrzeni lat, po dokładnym zagłębieniu się w ten temat zauważyłem że jest spowodowane położeniem, przez co narażone są one na wiele niebezpieczeństw, wysoka urbanizacja, aktywność sejsmiczna etc.
+-   Sumarycznie w Chinach dochodzi do największej liczby katastrof na przestrzeni lat. Po dokładnym zagłębieniu się w ten temat doszedłem do wniosku, że jest spowodowane położeniem tego państwa, przez co państwa azjatyckie (położene w sąsdiedztwie Chin) narażone są na wiele niebezpieczeństw, wysoka urbanizacja, aktywność sejsmiczna etc.
 
--   Istnieje zależność pomiędzy licznością ludności danego państwa a liczbą kataklizmów, popatrzmy, najbardziej zaludnione kraje, USA, Chiny, Indie mają najwięcej katastrof ponieważ przyczynia się do nich człowiek
+-   Ciekawym wnioskiem jest fakt że trzy państwa z największą liczbą katastrof to Chiny, USA, Indie. Jak powszechnie wiadomo, są to państwa z największą liczbą ludności 😉
+
+**Przechodząc do następnej wizualizacji**
 
 ```{r}
 data2 <- data %>%
@@ -354,7 +362,7 @@ ggplot(data2, aes(x = Year, y = Region, size = Count, color = Disaster.Subtype))
 
 -   Europa
 
-    -   Możemy wnioskować że mieszkańcy Europy na przestrzeni lat mieli spore problemy z powodziami lecz, aktualnie przez zmiany klimatu najbardziej doskierwają niszczące upały mieszkańcom Europy
+    -   Można wnioskować że mieszkańcy Europy na przestrzeni lat mieli spore problemy z powodziami lecz, aktualnie przez zmiany klimatu najbardziej doskierwają niszczące upały.
 
 -   Azja
 
@@ -363,6 +371,8 @@ ggplot(data2, aes(x = Year, y = Region, size = Count, color = Disaster.Subtype))
 -   Ameryki i Afryka
 
     -   Podobnie jak Azja, ze względu na podobne strefy klimatyczne, długośc i szerkośc geograficzną
+
+*Poniżej przedstawiono animowany wykres z liczbą ofiar katastrof na przestrzeni lat*
 
 ```{r}
 top_5_deaths <- data %>%
@@ -386,7 +396,7 @@ p <- ggplot(data_filtered, aes(x = reorder(Disaster.Subtype, Cumulative.Deaths),
   geom_bar(stat = "identity", show.legend = FALSE) +
   scale_fill_manual(values = c("#4A4A4A", "#6B6B6B", "#8C8C8C", "#A0A0A0", "#B3B3B3")) +  
   labs(
-    title = "Liczba wszystkich ofiar katastrof - {frame_time}",
+    title = "Liczba ofiar wybranych katastrof - {frame_time}",
     x = "Typ katastrofy",
     y = "Łączna liczba ofiar"
   ) +
@@ -421,6 +431,8 @@ Co Chiny mogą zrobić lepiej?
 
 Zainwestować w AI służące do prognozowania trzęsień ziemi (Koło ATLAS może takie zrobić 😉) i rozważyć zmianę budżetu państwa z nastawieniem na lepsze systemy ostrzegania przed trzesieniem ziemi, i w pomoc medyczną osobom poszkodowanym
 
+*Poniżej przedstawiono wykres z średnim czasem trwania katastrof z podziałem na ich podtyp*
+
 ```{r}
 data$Start.Date <- as.Date(data$Start.Date, format = "%Y-%m-%d")
 data$End.Date <- as.Date(data$End.Date, format = "%Y-%m-%d")
@@ -447,7 +459,13 @@ ggplot(summary_data, aes(x = Disaster.Subgroup, y = Average_Duration, fill = Reg
 
 -   Średnio 2/3 roku Afryka jest dotknięta katastrofami, ich liczebnośc na podstawie wiemy że nie jest aż tak liczna, ale jeśli już się coś zjawi to trwa bardzo długo :(
 
+-   Istnieje co najmniej jedna katastrofa która dotknełą Ameryki na 1/3 roku!
+
 -   Najtrudniejsze do zwalczenia są katastrofy klimatyczne, na które możemy miecć tylko wpływ zapobiegawczy
+
+-   W Europie najdłuższa katastrofa trwała 20 dni i była biologiczna
+
+-   Grupą najdłużej trwających katastrof są klimatyczne katastrofy
 
 -   Europa nie dość że nie ma wielu katastrof to jescze przechodzą dość szybko
 
@@ -504,6 +522,8 @@ corrplot(cor_matrix,
 
 **ANOVA dla liczby śmiertelnych przypadków dla każdego typu katastrofy**
 
+Wykonuję ANOVA ponieważ są spełnione założenia, rozkład liczby śmierci po odsianiu outlierów do poziomu IQR, jest zbliżony do normalnego, wariancje w porównywanych grupach są podobne etc.
+
 Czym jest ANOVA?
 
 Jest to metoda statystyczna używana do sprawdzania, czy średnie w więcej niż dwóch grupach są istotnie różne. Zakłada, że dane w grupach pochodzą z rozkładu normalnego o tej samej wariancji.
@@ -550,11 +570,11 @@ $$
 $$
 
 $$
-O_i: obserwowana ~wartość ~w ~i-tej ~kategorii
+O_i- obserwowana ~wartość ~w ~i-tej ~kategorii
 $$
 
 $$
- E_i: oczekiwana~ wartość ~w ~i-tej ~kategorii.
+ E_i-oczekiwana~ wartość ~w ~i-tej ~kategorii.
 $$
 
 ```{r}
@@ -564,11 +584,11 @@ chisq.test(table_region_type)
 
 **Wnioski:**
 
--   bardzo niska wartość p value wskazuje na silną zależność między regionem a typem katastrofy, co potwierdza wcześniej stawiane wnioski przy wykresie bąbelkowym
+-   bardzo niska p value wskazuje na silną zależność między regionem a typem katastrofy, co potwierdza wcześniej stawiane wnioski przy wykresie bąbelkowym, więc odrzucamy hipotezę o niezależności regionu od typu katastrofy
 
-W przeciwieństwie do ilości ofiar śmiertelnych, typy katastrof są zależne od kontynety, co wydaje się dosyć intuicyjne na podstawie położenia w innych strefach klimatycznych etc.
+W przeciwieństwie do liczby ofiar śmiertelnych, typy katastrof są zależne od kontynety, co wydaje się dosyć intuicyjne na podstawie położenia w innych strefach klimatycznych etc.
 
-**Test Kruskala-Wallisa dla ilości zgonów w zależności od kontynentu**
+**Test Kruskala-Wallisa dla liczby zgonów w zależności od kontynentu**
 
 Czym jest test K-W?
 
@@ -579,15 +599,15 @@ H = \frac{12}{N(N+1)} \sum_{i=1}^{k} \frac{R_i^2}{n_i} - 3(N+1)
 $$
 
 $$
-R_i: suma ~rang~ w ~i-tej ~grupie
+R_i-suma ~rang~ w ~i-tej ~grupie
 $$
 
 $$
-n_i: liczba ~obserwacji ~w ~i-tej~ grupie
+n_i- liczba ~obserwacji ~w ~i-tej~ grupie
 $$
 
 $$
-N: całkowita ~liczba ~obserwacji
+N- całkowita ~liczba ~obserwacji
 $$
 
 ```{r}
@@ -603,7 +623,9 @@ Wszystkie testy miały na celu potwierdzić poprzednie wnioski na podstawie wizu
 
 ## Uczenie maszynowe
 
-**Uczenie nienadzorowane - analiza gównych składowych - PCA**
+### PCA
+
+**Uczenie nienadzorowane - analiza gównych składowych**
 
 Czym jest PCA?
 
@@ -647,14 +669,14 @@ ggplot(loadings_long, aes(x = Feature, y = Loading, fill = PC)) +
 **Wnioski na temat analizy głównych składowych:**
 
 -   Analiza składowych głównych wskazuje, że regiony oraz typ katastrof (naturalne vs technologiczne) silnie różnicują dane.
--   Deaths i Damage to główne zmienne, które wyjaśniają intensywność katastrof w ramach PC3.
+-   Deaths i Injured to główne zmienne, które wyjaśniają intensywność katastrof w ramach PC3.
 -   Poszczególne regiony (np. Europe w PC1 i Africa w PC4) mają różny wpływ na wyniki, co podkreśla ich specyficzne cechy w analizowanych danych.
 
 **Uczenie nadzorowane - klasyfikacja katastrofa Naturalna VS Technologiczna**
 
 *Z uwagi na niezbalansowaną klasą posłużymy się metodą upsamplingu - SMOTE*
 
-Metoda ta bazując na podobieństwie cosinusowym tworzy syntetyczne próbki klasy mniejszościowej
+*Metoda ta bazując na podobieństwie cosinusowym tworzy syntetyczne próbki klasy mniejszościowej*
 
 ```{r}
 #write.csv(final_data, "final_data.csv",row.names = F)
@@ -681,7 +703,7 @@ Metoda ta bazując na podobieństwie cosinusowym tworzy syntetyczne próbki klas
 # test_data.to_csv("test_data.csv", index=False)
 ```
 
-**Najlepszy model jaki udało się stworzyć**
+### Drzewo decyzyjne
 
 ```{r}
 library(rpart)
@@ -722,8 +744,10 @@ G = 1 - \sum_{i=1}^{k} p_i^2\\
 $$
 
 $$
-p_i: proporcja~obserwacji~ należących~ do~ klasy~i
+p_i- proporcja~obserwacji~ należących~ do~ klasy~i
 $$
+
+### Regresja logistyczna
 
 ```{r}
 library(caret)
@@ -752,6 +776,8 @@ Regresja logistyczna to metoda modelowania prawdopodobieństwa przynależności 
 $$
 P(Y=1|X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \dots + \beta_p X_p)}}
 $$
+
+### Las losowy
 
 ```{r}
 library(randomForest)
@@ -804,6 +830,8 @@ najpierw wprowadźmy kilka definicji pomocniczych
     dokładności klasyfikatora, na podstawie wcześniej podanych metryk
 
 Warto dodać że przy ewaluacji modeli klasyfikacyjnych predykujących klasy niezbalansowane, warto jest zwrócić uwagę na takie metryki jak F1 score oraz Cohen Kappa :D
+
+### Podsumowanie zbudowanych modeli
 
 ```{r}
 library(reshape2)
@@ -861,7 +889,7 @@ Odnosząc się do pytań postawionych sobie na samym początku projektu jesteśm
 
     -   Oceania - niezmiennie tropikalne burze
 
-    -   Azja, Ameryki, Afryka- aktualnie może mieć problemy z powodziami
+    -   Azja, Ameryki, Afryka - aktualnie może mieć problemy z powodziami
 
 -   **Jakie są skutki katastrof dla mieszkańców poszczególnych regionów?**
 
@@ -873,6 +901,6 @@ Mam nadzieje że po przeczytaniu tego raportu zrozumiemy w jakim stanie jest nas
 
 ## Dalsze kroki...
 
-W przyszłości planuje zrobić aplikację w Streamlitcie do której podepnę model wielowyjściowy który będzie w stanie przewidywać na podstawie konkrentych predyktorów dokładnie czas trwania katastrofy, miejsce, skutki etc. na podstawie intregacji z bazami danych NASA, ewentualnie kilka modeli odpowiedzialnych za grupy predykcji.
+Projekt ten ma znaczący potencjał więc w przyszłości planuje zrobić aplikację w Streamlitcie do której podepnę model wielowyjściowy który będzie w stanie przewidywać na podstawie konkrentych predyktorów dokładnie czas trwania katastrofy, miejsce, skutki etc. na podstawie intregacji z bazami danych NASA, ewentualnie kilka modeli odpowiedzialnych za grupy predykcji.
 
 ![](images/clipboard-2638264063.png)
