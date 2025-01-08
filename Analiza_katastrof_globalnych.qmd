@@ -45,9 +45,7 @@ Niniejsza analiza ma na celu zbadanie danych pochodzących z platformy EMDAT, ab
 
 -   **Jakie są skutki katastrof dla mieszkańców poszczególnych regionów?**
 
--   **Jak wygląda historyczny kontekst skutków występowania katastrof?**
-
-Ponadto, planowane jest stworzenie modeli predykcyjnych, które pozwolą oszacować potencjalne skutki i straty związane z przyszłymi katastrofami.
+-   **Jak wygląda historyczny kontekst skutków występowania katastrof?**.
 
 ## Opis zbioru danych
 
@@ -520,42 +518,6 @@ corrplot(cor_matrix,
 
 -   Zmienne nie wykazują między sobą znaczących, czy też zaskakujących korelacji, wykazują oczywistę zależność pomiędzy liczbą ofiar a zgonami, co wydaje się dosyć oczywiste, tam samo zależność na temat kosztów
 
-**ANOVA dla liczby śmiertelnych przypadków dla każdego typu katastrofy**
-
-Wykonuję ANOVA ponieważ są spełnione założenia, rozkład liczby śmierci po odsianiu outlierów do poziomu IQR, jest zbliżony do normalnego, wariancje w porównywanych grupach są podobne etc.
-
-Czym jest ANOVA?
-
-Jest to metoda statystyczna używana do sprawdzania, czy średnie w więcej niż dwóch grupach są istotnie różne. Zakłada, że dane w grupach pochodzą z rozkładu normalnego o tej samej wariancji.
-
-$$
-F = \frac{\text{MS}_{\text{between}}}{\text{MS}_{\text{within}}}\\
-$$
-
-$$
-\text{MS}_{\text{between}} = \frac{\text{SS}_{\text{between}}}{k-1} – średnia ~kwadratów ~między~ grupami.  
-$$
-
-$$
-\\\text{MS}_{\text{within}} = \frac{\text{SS}_{\text{within}}}{N-k} – średnia ~kwadratów ~wewnątrz ~grup.
-$$
-
-**Kluczowe założenie**: porównujemy wariancję między grupami do wariancji wewnątrz grup.
-
-```{r}
-data$Region <- as.factor(data$Disaster.Type)
-anova_result <- aov(Total.Deaths ~ Disaster.Type, data = data)
-summary(anova_result)
-```
-
-**Wnioski:**
-
--   Test wskazuje istotne różnice pomiędzy typami katastrof.
-
--   Wysoka wartość F value (statystyka testowa ANOVA) wskazuje na większe różnice między grupami w porównaniu do różnic wewnątrz grup.
-
--   Bardzo mała p-wartość (\< 0.001) oznacza, że różnice w średniej liczbie śmiertelnych przypadków pomiędzy różnymi typami katastrof są statystycznie istotne.
-
 ```         
 ```
 
@@ -747,6 +709,28 @@ $$
 p_i- proporcja~obserwacji~ należących~ do~ klasy~i
 $$
 
+**Czym są krzywe ROC (Reciver Operating Characteristic)**
+
+najpierw wprowadźmy kilka definicji pomocniczych
+
+-   Czułośc:
+
+    $$  \text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}} $$
+
+-   Specyficznośc
+
+    $$ \text{Specificity} = \frac{\text{TN}}{\text{TN} + \text{FP}} $$
+
+-   Odsetek fałszywie pozytywnych tzw. FPR
+
+    $$  \text{FPR} = 1 - \text{Specificity} = \frac{\text{FP}}{\text{FP} + \text{TN}} $$
+
+-   AUC - jest to pole pod krzywą (przydają się jednak te całki z analizy co nie :D?) które nam mówi o
+
+    dokładności klasyfikatora, na podstawie wcześniej podanych metryk
+
+Warto dodać że przy ewaluacji modeli klasyfikacyjnych predykujących klasy niezbalansowane, warto jest zwrócić uwagę na takie metryki jak F1 score oraz Cohen Kappa :D
+
 ### Regresja logistyczna
 
 ```{r}
@@ -802,34 +786,6 @@ $$
 $$
 T_m(x): wynik~ m-tego~ drzewa
 $$
-
-Czym są pokazane wyżej krzywe ROC (Reciver Operating Characteristic)
-
-najpierw wprowadźmy kilka definicji pomocniczych
-
--   Czułośc:
-
-    $$
-     \text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}
-    $$
-
--   Specyficznośc
-
-    $$
-    \text{Specificity} = \frac{\text{TN}}{\text{TN} + \text{FP}}
-    $$
-
--   Odsetek fałszywie pozytywnych tzw. FPR
-
-    $$
-     \text{FPR} = 1 - \text{Specificity} = \frac{\text{FP}}{\text{FP} + \text{TN}}
-    $$
-
--   AUC - jest to pole pod krzywą (przydają się jednak te całki z analizy co nie :D?) które nam mówi o
-
-    dokładności klasyfikatora, na podstawie wcześniej podanych metryk
-
-Warto dodać że przy ewaluacji modeli klasyfikacyjnych predykujących klasy niezbalansowane, warto jest zwrócić uwagę na takie metryki jak F1 score oraz Cohen Kappa :D
 
 ### Podsumowanie zbudowanych modeli
 
